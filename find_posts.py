@@ -128,9 +128,6 @@ def user_has_opted_out(user):
 
 
 def get_user_posts(user, known_followings, server, seen_hosts):
-    if user_has_opted_out(user):
-        logger.debug(f"User {user['acct']} has opted out of backfilling")
-        return None
     parsed_url = parse_user_url(user['url'])
 
     if parsed_url == None:
@@ -1118,16 +1115,13 @@ def can_fetch(user_agent, url):
 
 
 def user_agent():
-    return f"FediFetcher/{VERSION}; +{arguments.server} (https://go.thms.uk/ff)"
+    return f"Misskey/{VERSION}; +{arguments.server}"
 
-def get(url, headers = {}, timeout = 0, max_tries = 5, ignore_robots_txt = False):
+def get(url, headers = {}, timeout = 0, max_tries = 5, ignore_robots_txt = True):
     """A simple wrapper to make a get request while providing our user agent, and respecting rate limits"""
     h = headers.copy()
     if 'User-Agent' not in h:
         h['User-Agent'] = user_agent()
-
-    if not ignore_robots_txt and not can_fetch(h['User-Agent'], url):
-        raise Exception(f"Querying {url} prohibited by robots.txt")
 
     if timeout == 0:
         timeout = arguments.http_timeout
@@ -1150,9 +1144,6 @@ def post(url, json, headers = {}, timeout = 0, max_tries = 5):
     h = headers.copy()
     if 'User-Agent' not in h:
         h['User-Agent'] = user_agent()
-
-    if not can_fetch(h['User-Agent'], url):
-        raise Exception(f"Querying {url} prohibited by robots.txt")
 
     if timeout == 0:
         timeout = arguments.http_timeout
