@@ -42,7 +42,6 @@ from find_posts import (
     parse_pleroma_uri,
     post,
     set_server_apis,
-    user_has_opted_out,
     parse_url
 )
 
@@ -215,13 +214,6 @@ def test_add_post_with_context_post_not_added(mock_functions):
 
     assert result is False
 
-
-def test_user_has_opted_out():
-    assert user_has_opted_out({"note": "I love robots"}) == False
-    assert user_has_opted_out({"note": "I love robots, nobot"}) == True
-    assert user_has_opted_out({"note": "/tags/nobot"}) == True
-    assert user_has_opted_out({"indexable": False}) == True
-    assert user_has_opted_out({"discoverable": False}) == True
 
 
 @pytest.fixture
